@@ -1,9 +1,11 @@
+import java.util.*;
 public class BookMyStay {
     
     public static void main(String[] args) {
 
         uc1_welcome();
         uc2_roomInitialization();
+        uc3_inventoryManagement();
 
     }
 
@@ -41,6 +43,24 @@ public class BookMyStay {
         suite.displayDetails();
         System.out.println("Available: " + suiteAvailable);
     }
+    // ================= UC3 =================
+public static void uc3_inventoryManagement() {
+
+    RoomInventory inventory = new RoomInventory();
+
+    System.out.println("\n===== Inventory Status =====");
+
+    System.out.println("Single Rooms: " + inventory.getAvailability("Single"));
+    System.out.println("Double Rooms: " + inventory.getAvailability("Double"));
+    System.out.println("Suite Rooms: " + inventory.getAvailability("Suite"));
+
+    // Update inventory
+    inventory.updateAvailability("Single", -1);
+
+    System.out.println("\nAfter Booking 1 Single Room:");
+
+    System.out.println("Single Rooms: " + inventory.getAvailability("Single"));
+}
     
 }
 // ================= ABSTRACT CLASS =================
@@ -81,5 +101,34 @@ class SuiteRoom extends Room {
 
     public SuiteRoom() {
         super("Suite Room", 3, 3000);
+    }
+}
+
+
+class RoomInventory {
+
+    private HashMap<String, Integer> inventory;
+
+    // Constructor → initialize inventory
+    public RoomInventory() {
+
+        inventory = new HashMap<>();
+
+        inventory.put("Single", 5);
+        inventory.put("Double", 3);
+        inventory.put("Suite", 2);
+    }
+
+    // Get availability
+    public int getAvailability(String roomType) {
+
+        return inventory.getOrDefault(roomType, 0);
+    }
+
+    // Update availability
+    public void updateAvailability(String roomType, int change) {
+
+        int current = inventory.getOrDefault(roomType, 0);
+        inventory.put(roomType, current + change);
     }
 }
