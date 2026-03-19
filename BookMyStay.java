@@ -12,6 +12,7 @@ public class BookMyStay {
         uc7_addOnServices();
         uc8_bookingHistory();
         uc9_errorHandling();
+        uc10_cancellationRollback();
 
     }
 
@@ -254,6 +255,50 @@ public static void uc9_errorHandling() {
 
             System.out.println("Error: " + e.getMessage());
         }
+    }
+}
+// ================= UC10 =================
+public static void uc10_cancellationRollback() {
+
+    RoomInventory inventory = new RoomInventory();
+
+    // Simulate allocated rooms
+    HashMap<String, Set<String>> allocatedRooms = new HashMap<>();
+    allocatedRooms.put("Single", new HashSet<>());
+
+    allocatedRooms.get("Single").add("S1");
+    allocatedRooms.get("Single").add("S2");
+
+    // Stack for rollback
+    Stack<String> rollbackStack = new Stack<>();
+
+    System.out.println("\n===== Booking Cancellation =====");
+
+    String cancelRoomId = "S2";  // simulate cancellation
+
+    // Check if room exists
+    if (allocatedRooms.get("Single").contains(cancelRoomId)) {
+
+        // Remove from allocated set
+        allocatedRooms.get("Single").remove(cancelRoomId);
+
+        // Push to rollback stack
+        rollbackStack.push(cancelRoomId);
+
+        // Restore inventory
+        inventory.updateAvailability("Single", +1);
+
+        System.out.println("Cancelled booking for Room ID: " + cancelRoomId);
+
+    } else {
+
+        System.out.println("Invalid cancellation request!");
+    }
+
+    // Show rollback stack
+    System.out.println("\nRollback Stack:");
+    for (String id : rollbackStack) {
+        System.out.println(id);
     }
 }
 }
