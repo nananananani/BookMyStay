@@ -1,3 +1,7 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 public class BookMyStay {
     
@@ -14,6 +18,7 @@ public class BookMyStay {
         uc9_errorHandling();
         uc10_cancellationRollback();
         uc11_concurrentBooking();
+        uc12_persistence();
 
     }
 
@@ -336,6 +341,64 @@ public static void uc11_concurrentBooking() {
     System.out.println("Final Availability: "
             + inventory.getAvailability("Single"));
 }
+// ================= UC12 =================
+public static void uc12_persistence() {
+
+    System.out.println("\n===== Data Persistence =====");
+
+    String fileName = "data.ser";
+
+    // Create sample data
+    RoomInventory inventory = new RoomInventory();
+    List<Reservation> bookings = new ArrayList<>();
+
+    bookings.add(new Reservation("Alice", "Single"));
+    bookings.add(new Reservation("Bob", "Double"));
+
+    // -------- SAVE --------
+    try {
+
+        ObjectOutputStream out = new ObjectOutputStream(
+                new FileOutputStream(fileName));
+
+        out.writeObject(inventory);
+        out.writeObject(bookings);
+
+        out.close();
+
+        System.out.println("Data saved successfully.");
+
+    } catch (Exception e) {
+        System.out.println("Error saving data.");
+    }
+
+    // -------- LOAD --------
+    try {
+
+        ObjectInputStream in = new ObjectInputStream(
+                new FileInputStream(fileName));
+
+        RoomInventory loadedInventory =
+                (RoomInventory) in.readObject();
+
+        List<Reservation> loadedBookings =
+                (List<Reservation>) in.readObject();
+
+        in.close();
+
+        System.out.println("\nRecovered Data:");
+
+        for (Reservation r : loadedBookings) {
+            r.display();
+        }
+
+        System.out.println("Single Rooms Available: "
+                + loadedInventory.getAvailability("Single"));
+
+    } catch (Exception e) {
+        System.out.println("Error loading data.");
+    }
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -377,37 +440,32 @@ class SuiteRoom extends Room {
         super("Suite Room", 3, 3000);
     }
 }
-
-
-class RoomInventory {
+// ================= ROOM INVENTORY CLASS =================
+class RoomInventory implements java.io.Serializable {
 
     private HashMap<String, Integer> inventory;
 
-    // Constructor → initialize inventory
     public RoomInventory() {
-
         inventory = new HashMap<>();
-
         inventory.put("Single", 5);
         inventory.put("Double", 3);
         inventory.put("Suite", 2);
     }
 
-    // Get availability
     public int getAvailability(String roomType) {
-
         return inventory.getOrDefault(roomType, 0);
     }
 
-    // Update availability
     public void updateAvailability(String roomType, int change) {
+        inventory.put(roomType, getAvailability(roomType) + change);
+    }
 
-        int current = inventory.getOrDefault(roomType, 0);
-        inventory.put(roomType, current + change);
+    public HashMap<String, Integer> getInventory() {
+        return inventory;
     }
 }
 // ================= RESERVATION CLASS =================
-class Reservation {
+class Reservation implements java.io.Serializable {
 
     String guestName;
     String roomType;
