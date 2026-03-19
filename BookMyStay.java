@@ -9,6 +9,7 @@ public class BookMyStay {
         uc4_searchRooms();
         uc5_bookingQueue();
         uc6_allocateRooms();
+        uc7_addOnServices();
 
     }
 
@@ -161,6 +162,35 @@ public static void uc6_allocateRooms() {
         }
     }
 }
+// ================= UC7 =================
+public static void uc7_addOnServices() {
+
+    // Map: Reservation ID → List of Services
+    HashMap<String, List<Service>> serviceMap = new HashMap<>();
+
+    // Example reservation ID (from UC6 concept)
+    String reservationId = "S1";
+
+    // Create services
+    List<Service> services = new ArrayList<>();
+    services.add(new Service("Breakfast", 200));
+    services.add(new Service("Airport Pickup", 500));
+    services.add(new Service("Extra Bed", 300));
+
+    // Map services to reservation
+    serviceMap.put(reservationId, services);
+
+    System.out.println("\n===== Add-On Services =====");
+
+    int totalCost = 0;
+
+    for (Service s : serviceMap.get(reservationId)) {
+        System.out.println("Service: " + s.name + " | Cost: " + s.cost);
+        totalCost += s.cost;
+    }
+
+    System.out.println("Total Add-On Cost: " + totalCost);
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -244,5 +274,16 @@ class Reservation {
 
     public void display() {
         System.out.println("Guest: " + guestName + " | Room: " + roomType);
+    }
+}
+// ================= SERVICE CLASS =================
+class Service {
+
+    String name;
+    int cost;
+
+    public Service(String name, int cost) {
+        this.name = name;
+        this.cost = cost;
     }
 }
