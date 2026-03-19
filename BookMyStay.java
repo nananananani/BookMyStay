@@ -6,7 +6,7 @@ public class BookMyStay {
 
     }
 
-    // ================= UC1 =================
+    // UC1
     public static void uc1_welcome() {
 
         System.out.println("===================================");
