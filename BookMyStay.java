@@ -8,6 +8,7 @@ public class BookMyStay {
         uc3_inventoryManagement();
         uc4_searchRooms();
         uc5_bookingQueue();
+        uc6_allocateRooms();
 
     }
 
@@ -106,6 +107,58 @@ public static void uc5_bookingQueue() {
     // Display queue (DO NOT REMOVE)
     for (Reservation r : bookingQueue) {
         r.display();
+    }
+}
+// ================= UC6 =================
+public static void uc6_allocateRooms() {
+
+    Queue<Reservation> bookingQueue = new LinkedList<>();
+
+    // Add sample requests
+    bookingQueue.add(new Reservation("Alice", "Single"));
+    bookingQueue.add(new Reservation("Bob", "Double"));
+    bookingQueue.add(new Reservation("Charlie", "Single"));
+
+    RoomInventory inventory = new RoomInventory();
+
+    // Map room type → allocated IDs
+    HashMap<String, Set<String>> allocatedRooms = new HashMap<>();
+
+    allocatedRooms.put("Single", new HashSet<>());
+    allocatedRooms.put("Double", new HashSet<>());
+    allocatedRooms.put("Suite", new HashSet<>());
+
+    System.out.println("\n===== Room Allocation =====");
+
+    int roomCounter = 1;
+
+    while (!bookingQueue.isEmpty()) {
+
+        Reservation request = bookingQueue.poll();
+
+        String type = request.roomType;
+
+        if (inventory.getAvailability(type) > 0) {
+
+            // Generate unique room ID
+            String roomId = type.substring(0, 1) + roomCounter++;
+
+            // Ensure uniqueness
+            if (!allocatedRooms.get(type).contains(roomId)) {
+
+                allocatedRooms.get(type).add(roomId);
+
+                // Update inventory
+                inventory.updateAvailability(type, -1);
+
+                System.out.println("Confirmed: " + request.guestName +
+                        " → Room ID: " + roomId);
+
+            }
+        } else {
+
+            System.out.println("No rooms available for " + request.guestName);
+        }
     }
 }
 }
