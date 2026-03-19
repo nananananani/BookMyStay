@@ -7,6 +7,7 @@ public class BookMyStay {
         uc2_roomInitialization();
         uc3_inventoryManagement();
         uc4_searchRooms();
+        uc5_bookingQueue();
 
     }
 
@@ -90,7 +91,23 @@ public static void uc4_searchRooms() {
         System.out.println("Available: " + inventory.getAvailability("Suite"));
     }
 }
-    
+// ================= UC5 =================
+public static void uc5_bookingQueue() {
+
+    Queue<Reservation> bookingQueue = new LinkedList<>();
+
+    // Add booking requests
+    bookingQueue.add(new Reservation("Alice", "Single"));
+    bookingQueue.add(new Reservation("Bob", "Double"));
+    bookingQueue.add(new Reservation("Charlie", "Suite"));
+
+    System.out.println("\n===== Booking Requests (FIFO Order) =====");
+
+    // Display queue (DO NOT REMOVE)
+    for (Reservation r : bookingQueue) {
+        r.display();
+    }
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -159,5 +176,20 @@ class RoomInventory {
 
         int current = inventory.getOrDefault(roomType, 0);
         inventory.put(roomType, current + change);
+    }
+}
+// ================= RESERVATION CLASS =================
+class Reservation {
+
+    String guestName;
+    String roomType;
+
+    public Reservation(String guestName, String roomType) {
+        this.guestName = guestName;
+        this.roomType = roomType;
+    }
+
+    public void display() {
+        System.out.println("Guest: " + guestName + " | Room: " + roomType);
     }
 }
