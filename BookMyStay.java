@@ -13,6 +13,7 @@ public class BookMyStay {
         uc8_bookingHistory();
         uc9_errorHandling();
         uc10_cancellationRollback();
+        uc11_concurrentBooking();
 
     }
 
@@ -301,6 +302,40 @@ public static void uc10_cancellationRollback() {
         System.out.println(id);
     }
 }
+// ================= UC11 =================
+public static void uc11_concurrentBooking() {
+
+    System.out.println("\n===== Concurrent Booking Simulation =====");
+
+    Queue<Reservation> queue = new LinkedList<>();
+
+    // Add requests
+    queue.add(new Reservation("Alice", "Single"));
+    queue.add(new Reservation("Bob", "Single"));
+    queue.add(new Reservation("Charlie", "Single"));
+
+    RoomInventory inventory = new RoomInventory();
+
+    // Create threads
+    BookingThread t1 = new BookingThread(queue, inventory);
+    BookingThread t2 = new BookingThread(queue, inventory);
+
+    t1.setName("Thread-1");
+    t2.setName("Thread-2");
+
+    t1.start();
+    t2.start();
+
+    try {
+        t1.join();
+        t2.join();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    System.out.println("Final Availability: "
+            + inventory.getAvailability("Single"));
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -434,5 +469,50 @@ class InvalidBookingException extends Exception {
 
     public InvalidBookingException(String message) {
         super(message);
+    }
+}
+// ================= BOOKING THREAD =================
+class BookingThread extends Thread {
+
+    private Queue<Reservation> queue;
+    private RoomInventory inventory;
+
+    public BookingThread(Queue<Reservation> queue, RoomInventory inventory) {
+        this.queue = queue;
+        this.inventory = inventory;
+    }
+
+    public void run() {
+
+        while (true) {
+
+            Reservation r;
+
+            // CRITICAL SECTION → synchronized access to queue
+            synchronized (queue) {
+
+                if (queue.isEmpty())
+                    break;
+
+                r = queue.poll();
+            }
+
+            // CRITICAL SECTION → synchronized inventory update
+            synchronized (inventory) {
+
+                if (inventory.getAvailability(r.roomType) > 0) {
+
+                    inventory.updateAvailability(r.roomType, -1);
+
+                    System.out.println(Thread.currentThread().getName()
+                            + " booked " + r.roomType + " for " + r.guestName);
+
+                } else {
+
+                    System.out.println(Thread.currentThread().getName()
+                            + " FAILED booking for " + r.guestName);
+                }
+            }
+        }
     }
 }
