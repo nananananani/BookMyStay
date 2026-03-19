@@ -11,6 +11,7 @@ public class BookMyStay {
         uc6_allocateRooms();
         uc7_addOnServices();
         uc8_bookingHistory();
+        uc9_errorHandling();
 
     }
 
@@ -213,6 +214,48 @@ public static void uc8_bookingHistory() {
     // Generate report
     history.generateReport();
 }
+// ================= VALIDATION METHOD =================
+public static void validateBooking(String roomType, RoomInventory inventory)
+        throws InvalidBookingException {
+
+    // Check valid room type
+    if (!(roomType.equals("Single") ||
+          roomType.equals("Double") ||
+          roomType.equals("Suite"))) {
+
+        throw new InvalidBookingException("Invalid room type selected!");
+    }
+
+    // Check availability
+    if (inventory.getAvailability(roomType) <= 0) {
+        throw new InvalidBookingException("No rooms available for " + roomType);
+    }
+}
+// ================= UC9 =================
+public static void uc9_errorHandling() {
+
+    RoomInventory inventory = new RoomInventory();
+
+    System.out.println("\n===== Error Handling & Validation =====");
+
+    String[] testInputs = {"Single", "Luxury", "Suite"};
+
+    for (String roomType : testInputs) {
+
+        try {
+
+            System.out.println("\nTrying booking for: " + roomType);
+
+            validateBooking(roomType, inventory);
+
+            System.out.println("Booking valid for " + roomType);
+
+        } catch (InvalidBookingException e) {
+
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -339,5 +382,12 @@ class BookingHistory {
         System.out.println("\n===== Booking Report =====");
 
         System.out.println("Total Bookings: " + history.size());
+    }
+}
+// ================= CUSTOM EXCEPTION =================
+class InvalidBookingException extends Exception {
+
+    public InvalidBookingException(String message) {
+        super(message);
     }
 }
