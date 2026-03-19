@@ -10,6 +10,7 @@ public class BookMyStay {
         uc5_bookingQueue();
         uc6_allocateRooms();
         uc7_addOnServices();
+        uc8_bookingHistory();
 
     }
 
@@ -191,6 +192,27 @@ public static void uc7_addOnServices() {
 
     System.out.println("Total Add-On Cost: " + totalCost);
 }
+// ================= UC8 =================
+public static void uc8_bookingHistory() {
+
+    BookingHistory history = new BookingHistory();
+
+    // Simulate confirmed bookings (from UC6 concept)
+    Reservation r1 = new Reservation("Alice", "Single");
+    Reservation r2 = new Reservation("Bob", "Double");
+    Reservation r3 = new Reservation("Charlie", "Suite");
+
+    // Store in history
+    history.addBooking(r1);
+    history.addBooking(r2);
+    history.addBooking(r3);
+
+    // Display history
+    history.displayHistory();
+
+    // Generate report
+    history.generateReport();
+}
 }
 // ================= ABSTRACT CLASS =================
 abstract class Room {
@@ -285,5 +307,37 @@ class Service {
     public Service(String name, int cost) {
         this.name = name;
         this.cost = cost;
+    }
+}
+// ================= BOOKING HISTORY =================
+class BookingHistory {
+
+    private List<Reservation> history;
+
+    public BookingHistory() {
+        history = new ArrayList<>();
+    }
+
+    // Add confirmed booking
+    public void addBooking(Reservation r) {
+        history.add(r);
+    }
+
+    // Display all bookings
+    public void displayHistory() {
+
+        System.out.println("\n===== Booking History =====");
+
+        for (Reservation r : history) {
+            r.display();
+        }
+    }
+
+    // Generate simple report
+    public void generateReport() {
+
+        System.out.println("\n===== Booking Report =====");
+
+        System.out.println("Total Bookings: " + history.size());
     }
 }
