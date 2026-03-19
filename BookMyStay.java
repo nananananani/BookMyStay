@@ -6,6 +6,7 @@ public class BookMyStay {
         uc1_welcome();
         uc2_roomInitialization();
         uc3_inventoryManagement();
+        uc4_searchRooms();
 
     }
 
@@ -60,6 +61,34 @@ public static void uc3_inventoryManagement() {
     System.out.println("\nAfter Booking 1 Single Room:");
 
     System.out.println("Single Rooms: " + inventory.getAvailability("Single"));
+}
+// ================= UC4 =================
+public static void uc4_searchRooms() {
+
+    RoomInventory inventory = new RoomInventory();
+
+    System.out.println("\n===== Available Rooms =====");
+
+    // Room objects
+    Room single = new SingleRoom();
+    Room doubleRoom = new DoubleRoom();
+    Room suite = new SuiteRoom();
+
+    // Check and display only available rooms
+    if (inventory.getAvailability("Single") > 0) {
+        single.displayDetails();
+        System.out.println("Available: " + inventory.getAvailability("Single"));
+    }
+
+    if (inventory.getAvailability("Double") > 0) {
+        doubleRoom.displayDetails();
+        System.out.println("Available: " + inventory.getAvailability("Double"));
+    }
+
+    if (inventory.getAvailability("Suite") > 0) {
+        suite.displayDetails();
+        System.out.println("Available: " + inventory.getAvailability("Suite"));
+    }
 }
     
 }
